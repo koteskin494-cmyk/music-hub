@@ -1,0 +1,149 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0a1628;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+
+.card {
+  background: white;
+  border: 1px solid #1e2a3a;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 8px;
+  border-radius: 4px;
+}
+
+button.danger {
+  background: #dc3545;
+}
+
+button.secondary {
+  background: #6c757d;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+
+.badge {
+  display: inline-block;
+  background: #e9ecef;
+  color: #333;
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+}
+
+
+.error-message {
+  color: #dc3545;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+
+.navbar {
+  background: #0d1b2a;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #1e2a3a;
+}
+
+.nav-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-btn {
+  background: none;
+  color: white;
+}
+
+
+.main-title {
+  color: white;
+}
+
+
+.text-light {
+  color: #ccc;
+}
