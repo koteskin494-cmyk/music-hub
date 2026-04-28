@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://music-hub-backend.onrender.com/api' 
-  : 'http://localhost:5000/api';
+const API_URL = 'https://music-hub-backend.onrender.com/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -74,7 +72,7 @@ const tracksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    
+
       .addCase(fetchTracks.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -87,7 +85,7 @@ const tracksSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      
+  
       .addCase(fetchTrackById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -100,18 +98,18 @@ const tracksSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-    
+     
       .addCase(createTrack.fulfilled, (state, action) => {
         state.list.unshift(action.payload);
       })
-      
+
       .addCase(updateTrack.fulfilled, (state, action) => {
         state.list = state.list.map(track =>
           track._id === action.payload._id ? action.payload : track
         );
         state.currentTrack = action.payload;
       })
-      
+
       .addCase(deleteTrack.fulfilled, (state, action) => {
         state.list = state.list.filter(track => track._id !== action.payload);
         if (state.currentTrack?._id === action.payload) {
