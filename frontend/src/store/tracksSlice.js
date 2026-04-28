@@ -5,7 +5,12 @@ const API_URL = 'https://music-hub-backend.onrender.com/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
-  return { headers: { Authorization: `Bearer ${token}` } };
+  return {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
 };
 
 
@@ -72,7 +77,7 @@ const tracksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
+      // fetchTracks
       .addCase(fetchTracks.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -85,7 +90,7 @@ const tracksSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-  
+
       .addCase(fetchTrackById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -98,7 +103,7 @@ const tracksSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-     
+
       .addCase(createTrack.fulfilled, (state, action) => {
         state.list.unshift(action.payload);
       })
@@ -107,7 +112,9 @@ const tracksSlice = createSlice({
         state.list = state.list.map(track =>
           track._id === action.payload._id ? action.payload : track
         );
-        state.currentTrack = action.payload;
+        if (state.currentTrack?._id === action.payload._id) {
+          state.currentTrack = action.payload;
+        }
       })
 
       .addCase(deleteTrack.fulfilled, (state, action) => {
