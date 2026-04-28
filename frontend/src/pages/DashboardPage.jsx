@@ -1,43 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setTracks, addTrack, updateTrack, removeTrack, setLoading } from '../store/tracksSlice';
-import { useTracks } from '../hooks/useTracks';
-import Input from '../components/Input';
+import { fetchTracks, createTrack, updateTrack, deleteTrack } from '../store/tracksSlice';
 import Loader from '../components/Loader';
+import Input from '../components/Input';
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { list, loading } = useSelector(state => state.tracks);
-  const { fetchTracks, createTrack, updateTrack: updateTrackAPI, deleteTrack } = useTracks();
+  const user = JSON.parse(localStorage.getItem('user'));
   
   const [title, setTitle] = useState('');
   const [genre, setGenre] = useState('');
   const [notes, setNotes] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
-    const loadTracks = async () => {
-      dispatch(setLoading(true));
-      const tracks = await fetchTracks();
-      dispatch(setTracks(tracks));
-    };
     loadTracks();
-  }, [dispatch, fetchTracks]);
+  }, [search, sortBy, sortOrder]);
+
+  const loadTracks = () => {
+    dispatch(fetchTracks({ search, sortBy, order: sortOrder }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title) return;
+    if (!title.trim()) return;
 
     if (editingId) {
-      const updated = await updateTrackAPI(editingId, { title, genre, notes });
-      dispatch(updateTrack(updated));
+      await dispatch(updateTrack({ id: editingId, trackData: { title, genre, notes } }));
       setEditingId(null);
     } else {
-      const newTrack = await createTrack({ title, genre, notes });
-      dispatch(addTrack(newTrack));
+      await dispatch(createTrack({ title, genre, notes }));
     }
     setTitle('');
     setGenre('');
@@ -46,15 +44,14 @@ const DashboardPage = () => {
 
   const handleEdit = (track) => {
     setTitle(track.title);
-    setGenre(track.genre);
-    setNotes(track.notes);
+    setGenre(track.genre || '');
+    setNotes(track.notes || '');
     setEditingId(track._id);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Удалить этот трек?')) {
-      await deleteTrack(id);
-      dispatch(removeTrack(id));
+      await dispatch(deleteTrack(id));
     }
   };
 
@@ -64,7 +61,7 @@ const DashboardPage = () => {
     navigate('/login');
   };
 
-  if (loading) return <Loader />;
+  if (loading && list.length === 0) return <Loader />;
 
   return (
     <div className="container">
@@ -73,6 +70,29 @@ const DashboardPage = () => {
         <button onClick={handleLogout}>Выйти ({user?.name})</button>
       </div>
 
+  
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="🔍 Поиск по трекам..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: 2 }}
+          />
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="createdAt">По дате</option>
+            <option value="title">По названию</option>
+            <option value="genre">По жанру</option>
+          </select>
+          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <option value="desc">↓ Сначала новые</option>
+            <option value="asc">↑ Сначала старые</option>
+          </select>
+        </div>
+      </div>
+
+   
       <div className="card">
         <h2>{editingId ? '✏️ Редактировать трек' : '➕ Добавить новый трек'}</h2>
         <form onSubmit={handleSubmit}>
@@ -107,6 +127,9 @@ const DashboardPage = () => {
         </form>
       </div>
 
+     
+      <h2 style={{ marginBottom: 15 }}>Мои треки ({list.length})</h2>
+      
       {list.map(track => (
         <div key={track._id} className="card">
           <h3 style={{ cursor: 'pointer' }} onClick={() => navigate(`/track/${track._id}`)}>
@@ -118,6 +141,12 @@ const DashboardPage = () => {
           <button className="danger" onClick={() => handleDelete(track._id)}>Удалить</button>
         </div>
       ))}
+
+      {list.length === 0 && !loading && (
+        <div className="card" style={{ textAlign: 'center' }}>
+          🎸 Пока нет треков. Создайте свой первый трек!
+        </div>
+      )}
     </div>
   );
 };

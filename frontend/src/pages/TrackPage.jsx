@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTracks } from '../hooks/useTracks';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTrackById, clearCurrentTrack } from '../store/tracksSlice';
 import Loader from '../components/Loader';
 
 const TrackPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { fetchTracks, loading: fetching } = useTracks();
-  const [track, setTrack] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { currentTrack: track, loading } = useSelector(state => state.tracks);
 
   useEffect(() => {
-    const loadTrack = async () => {
-      const tracks = await fetchTracks();
-      const found = tracks.find(t => t._id === id);
-      setTrack(found);
-      setLoading(false);
+    dispatch(fetchTrackById(id));
+    return () => {
+      dispatch(clearCurrentTrack());
     };
-    loadTrack();
-  }, [id, fetchTracks]);
+  }, [dispatch, id]);
 
-  if (loading || fetching) return <Loader />;
+  if (loading) return <Loader />;
   
   if (!track) {
     return (
@@ -43,14 +40,14 @@ const TrackPage = () => {
         {track.genre && <span className="badge">{track.genre}</span>}
         
         <div style={{ marginBottom: 20 }}>
-          <h3> Заметки</h3>
+          <h3>📝 Заметки</h3>
           <p style={{ color: '#555', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
             {track.notes || 'Нет заметок.'}
           </p>
         </div>
         
         <div style={{ marginBottom: 20 }}>
-          <h3> Создан</h3>
+          <h3>📅 Создан</h3>
           <p style={{ color: '#777' }}>
             {new Date(track.createdAt).toLocaleDateString()}
           </p>
